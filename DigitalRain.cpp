@@ -8,14 +8,17 @@
 
 DigitalRain::DigitalRain() {
     // Initialize DigitalRain object
-    srand(time(nullptr)); // Seed random number generator
+    srand(static_cast<unsigned int>(time(nullptr))); // Seed random number generator with the current time
 }
 
 void DigitalRain::start() {
     const int screenWidth = 80; // Adjust as needed
     const int screenHeight = 25; // Adjust as needed
+    const int raindropFrequency = 20; // Adjust the frequency of raindrops (increase for more raindrops)
+    const int asciiRangeStart = 33; // Start of the ASCII range for random characters
+    const int asciiRangeEnd = 126; // End of the ASCII range for random characters
 
-    std::vector<std::vector<char>> grid(screenHeight, std::vector<char>(screenWidth, ' ')); // Initialize all elements to ' '
+    std::vector<std::vector<char>> grid(screenHeight, std::vector<char>(screenWidth, ' ')); // Initialize all elements to space
 
     while (true) {
         // Clear the screen
@@ -34,12 +37,10 @@ void DigitalRain::start() {
 
         // Update the grid with new raindrops
         for (int x = 0; x < screenWidth; ++x) {
-            if (rand() % 100 < 20) { // Adjust the probability as needed
-                int length = rand() % 10 + 1; // Random length between 1 and 10
-                for (int y = 0; y < length; ++y) {
-                    if (y < screenHeight) {
-                        grid[y][x] = '.'; // Use different characters for raindrops for visual variety
-                    }
+            if (rand() % 100 < raindropFrequency) { // Adjust the probability as needed
+                int startY = rand() % screenHeight; // Random starting position at the top
+                if (startY < screenHeight) {
+                    grid[startY][x] = rand() % (asciiRangeEnd - asciiRangeStart + 1) + asciiRangeStart; // Generate a random ASCII character
                 }
             }
         }
@@ -47,24 +48,25 @@ void DigitalRain::start() {
         // Render the raindrops
         for (int y = 0; y < screenHeight; ++y) {
             for (int x = 0; x < screenWidth; ++x) {
-                std::cout << grid[y][x];
+                if (grid[y][x] != ' ') {
+                    // Set the color to green
+                    std::cout << "\x1B[32m" << grid[y][x] << "\x1B[0m"; // ANSI escape codes for green color
+                }
+                else {
+                    std::cout << ' '; // Empty space if no raindrop
+                }
             }
             std::cout << std::endl;
         }
 
-        // Shift all raindrops down by one position
-        for (int y = screenHeight - 1; y > 0; --y) {
+        // Clear the grid for next frame
+        for (int y = 0; y < screenHeight; ++y) {
             for (int x = 0; x < screenWidth; ++x) {
-                grid[y][x] = grid[y - 1][x];
+                grid[y][x] = ' ';
             }
         }
 
-        // Clear the top row
-        for (int x = 0; x < screenWidth; ++x) {
-            grid[0][x] = ' ';
-        }
-
         // Sleep for a short duration to control the speed of the rain
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(400));
     }
 }
