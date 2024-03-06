@@ -12,3 +12,4 @@ std::string Raindrop::toString() const {
     // Convert raindrop to string representation
     return std::string(1, symbol);
 }
+
