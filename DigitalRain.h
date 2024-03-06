@@ -6,12 +6,17 @@
 #include "Raindrop.h"
 
 class DigitalRain {
-public:
-    DigitalRain();
-    void start();
-
 private:
-    std::vector<Raindrop> raindrops;
+    std::vector<std::vector<char>> grid;
+    const int screenWidth;
+    const int screenHeight;
+    const int raindropFrequency;
+    const int asciiRangeStart;
+    const int asciiRangeEnd;
+
+public:
+    DigitalRain(int width, int height, int frequency, int start, int end);
+    void start();
 };
 
 #endif // DIGITALRAIN_H
